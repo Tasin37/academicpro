@@ -19,7 +19,6 @@ export interface IOrder extends Document {
   deadline: Date;
   pages?: number;
   academicLevel: string;
-  deadline: Date;
   budget: number;
   status: OrderStatus;
   attachments?: string[];

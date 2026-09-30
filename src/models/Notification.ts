@@ -20,7 +20,7 @@ export interface INotification extends Document {
   type: NotificationType;
   title: string;
   message: string;
-  data?: Record<string, any>;
+  data?: Record<string, unknown>;
   isRead: boolean;
   readAt?: Date;
   actionUrl?: string;
