@@ -1,3 +1,4 @@
+import Link from "next/link";
 import SectionHeading from "./components/SectionHeading";
 import ServiceCard from "./components/ServiceCard";
 import StepCard from "./components/StepCard";
@@ -78,34 +79,37 @@ export default function Home() {
     <div className="page-grid text-[#182329]">
       <header className="sticky top-0 z-10 border-b border-[#d9ddda]/80 bg-[#f5f4f0]/90 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <a className="flex items-center gap-3 text-lg font-semibold tracking-tight text-[#182329]" href="#hero">
+          <Link className="flex items-center gap-3 text-lg font-semibold tracking-tight text-[#182329]" href="/">
             <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e8664d] text-xs font-bold text-white">A</span>
             Academic<span className="text-[#e8664d]">Pro</span>
-          </a>
+          </Link>
           <nav className="hidden items-center gap-8 text-sm font-medium text-[#647176] md:flex">
-            <a href="#services" className="transition hover:text-[#e8664d]">
+            <Link href="/services" className="transition hover:text-[#e8664d]">
               Services
-            </a>
-            <a href="#why-us" className="transition hover:text-[#e8664d]">
-              Why Us
-            </a>
+            </Link>
+            <Link href="/pricing" className="transition hover:text-[#e8664d]">
+              Pricing
+            </Link>
             <a href="#how-it-works" className="transition hover:text-[#e8664d]">
               Process
             </a>
-            <a href="#faq" className="transition hover:text-[#e8664d]">
-              FAQ
-            </a>
+            <Link href="/blog" className="transition hover:text-[#e8664d]">
+              Blog
+            </Link>
+            <Link href="/contact" className="transition hover:text-[#e8664d]">
+              Contact
+            </Link>
           </nav>
           <div className="flex items-center gap-3">
-            <a href="/auth" className="hidden text-sm font-semibold text-[#182329] transition hover:text-[#e8664d] sm:inline-flex">
+            <Link href="/auth" className="hidden text-sm font-semibold text-[#182329] transition hover:text-[#e8664d] sm:inline-flex">
               Sign in
-            </a>
-            <a
+            </Link>
+            <Link
               href="/auth?mode=register"
               className="rounded-full bg-[#182329] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#e8664d]"
             >
               Get started
-            </a>
+            </Link>
           </div>
         </div>
       </header>
@@ -279,15 +283,18 @@ export default function Home() {
         <div className="mt-12 flex flex-col gap-6 border-t border-slate-800 pt-8 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <p>© 2026 AcademicPro. All rights reserved.</p>
           <div className="flex flex-wrap gap-6">
-            <a href="#services" className="transition hover:text-white">
+            <Link href="/services" className="transition hover:text-white">
               Services
-            </a>
-            <a href="#how-it-works" className="transition hover:text-white">
-              Process
-            </a>
-            <a href="#faq" className="transition hover:text-white">
-              FAQ
-            </a>
+            </Link>
+            <Link href="/pricing" className="transition hover:text-white">
+              Pricing
+            </Link>
+            <Link href="/blog" className="transition hover:text-white">
+              Blog
+            </Link>
+            <Link href="/contact" className="transition hover:text-white">
+              Contact
+            </Link>
           </div>
         </div>
       </footer>

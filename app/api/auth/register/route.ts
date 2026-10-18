@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
-import { User, Student } from "@/src/models/models";
+import { User, Student, Writer } from "@/src/models/models";
 import { UserRole } from "@/src/models/User";
 import { mongooseConnect } from "@/src/lib/mongoose";
 
@@ -9,6 +9,7 @@ type RegistrationBody = {
   lastName?: string;
   email?: string;
   password?: string;
+  role?: "student" | "writer";
 };
 
 export async function POST(request: Request) {
@@ -18,6 +19,7 @@ export async function POST(request: Request) {
     const lastName = body.lastName?.trim();
     const email = body.email?.trim().toLowerCase();
     const password = body.password;
+    const requestedRole = body.role === "writer" ? UserRole.WRITER : UserRole.STUDENT;
 
     if (!firstName || !lastName || !email || !password) {
       return NextResponse.json({ error: "All fields are required." }, { status: 400 });
@@ -39,13 +41,22 @@ export async function POST(request: Request) {
       lastName,
       email,
       password: await bcrypt.hash(password, 12),
-      role: UserRole.STUDENT,
+      role: requestedRole,
     });
 
-    await Student.create({ userId: user._id });
+    if (requestedRole === UserRole.WRITER) {
+      await Writer.create({
+        userId: user._id,
+        hourlyRate: 20,
+        expertise: ["General Academic Writing"],
+        isVerified: false,
+      });
+    } else {
+      await Student.create({ userId: user._id });
+    }
 
     return NextResponse.json(
-      { user: { id: user._id.toString(), firstName, lastName, email, role: UserRole.STUDENT } },
+      { user: { id: user._id.toString(), firstName, lastName, email, role: requestedRole } },
       { status: 201 },
     );
   } catch {

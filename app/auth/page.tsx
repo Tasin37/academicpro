@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Suspense } from "react";
 import { getSession, signIn } from "next-auth/react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
 function AuthForm() {
@@ -12,6 +13,7 @@ function AuthForm() {
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
+  const [role, setRole] = useState<"student" | "writer">("student");
   const [isRegistering, setIsRegistering] = useState(searchParams.get("mode") === "register");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -26,7 +28,7 @@ function AuthForm() {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ firstName, lastName, email, password }),
+        body: JSON.stringify({ firstName, lastName, email, password, role }),
       });
 
       if (!response.ok) {
@@ -41,7 +43,7 @@ function AuthForm() {
       redirect: false,
       email,
       password,
-      callbackUrl: callbackUrl || "/student",
+      callbackUrl: callbackUrl || (role === "writer" ? "/writer" : "/student"),
     });
 
     if (!result) {
@@ -68,22 +70,75 @@ function AuthForm() {
   return (
     <section className="page-grid min-h-screen px-6 py-20 text-[#182329] sm:px-10">
       <div className="mx-auto max-w-md border border-[#d9ddda] bg-[#fbfaf7] p-8 shadow-xl shadow-[#182329]/5 sm:p-10">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e8664d] text-sm font-bold text-white">A</div>
+        <div className="flex items-center justify-between">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#e8664d] text-sm font-bold text-white">A</div>
+          <Link href="/" className="text-xs font-semibold text-[#647176] transition hover:text-[#e8664d]">
+            ← Back to Home
+          </Link>
+        </div>
         <h1 className="mt-8 text-3xl font-semibold tracking-tight">{isRegistering ? "Create your account" : "Sign in"}</h1>
-        <p className="mt-3 text-[#647176]">{isRegistering ? "Start managing your assignments in one place." : "Use your account to access your dashboard and assignments."}</p>
+        <p className="mt-3 text-[#647176]">
+          {isRegistering
+            ? "Choose your account type and start collaborating."
+            : "Use your account to access your dashboard and assignments."}
+        </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           {isRegistering ? (
-            <div className="grid gap-4 sm:grid-cols-2">
+            <>
               <div>
-                <label htmlFor="firstName" className="block text-sm font-medium text-[#39484d]">First name</label>
-                <input id="firstName" value={firstName} onChange={(event) => setFirstName(event.target.value)} required className="mt-2 w-full border border-[#d9ddda] bg-[#f5f4f0] px-4 py-3 outline-none transition focus:border-[#e8664d]" />
+                <label className="block text-sm font-medium text-[#39484d]">Account type</label>
+                <div className="mt-2 grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setRole("student")}
+                    className={`flex flex-col items-center justify-center border p-3.5 text-center transition ${
+                      role === "student"
+                        ? "border-[#e8664d] bg-white text-[#182329] shadow-sm ring-1 ring-[#e8664d]/30"
+                        : "border-[#d9ddda] bg-[#f5f4f0] text-[#647176] hover:border-[#b9c1bd]"
+                    }`}
+                  >
+                    <span className="text-sm font-semibold">Student</span>
+                    <span className="mt-0.5 text-xs text-[#647176]">Get assignment help</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setRole("writer")}
+                    className={`flex flex-col items-center justify-center border p-3.5 text-center transition ${
+                      role === "writer"
+                        ? "border-[#e8664d] bg-white text-[#182329] shadow-sm ring-1 ring-[#e8664d]/30"
+                        : "border-[#d9ddda] bg-[#f5f4f0] text-[#647176] hover:border-[#b9c1bd]"
+                    }`}
+                  >
+                    <span className="text-sm font-semibold">Academic Writer</span>
+                    <span className="mt-0.5 text-xs text-[#647176]">Complete orders & earn</span>
+                  </button>
+                </div>
               </div>
-              <div>
-                <label htmlFor="lastName" className="block text-sm font-medium text-[#39484d]">Last name</label>
-                <input id="lastName" value={lastName} onChange={(event) => setLastName(event.target.value)} required className="mt-2 w-full border border-[#d9ddda] bg-[#f5f4f0] px-4 py-3 outline-none transition focus:border-[#e8664d]" />
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label htmlFor="firstName" className="block text-sm font-medium text-[#39484d]">First name</label>
+                  <input
+                    id="firstName"
+                    value={firstName}
+                    onChange={(event) => setFirstName(event.target.value)}
+                    required
+                    className="mt-2 w-full border border-[#d9ddda] bg-[#f5f4f0] px-4 py-3 outline-none transition focus:border-[#e8664d]"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="lastName" className="block text-sm font-medium text-[#39484d]">Last name</label>
+                  <input
+                    id="lastName"
+                    value={lastName}
+                    onChange={(event) => setLastName(event.target.value)}
+                    required
+                    className="mt-2 w-full border border-[#d9ddda] bg-[#f5f4f0] px-4 py-3 outline-none transition focus:border-[#e8664d]"
+                  />
+                </div>
               </div>
-            </div>
+            </>
           ) : null}
 
           <div>
@@ -121,7 +176,7 @@ function AuthForm() {
             disabled={isSubmitting}
             className="w-full rounded-full bg-[#182329] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#e8664d] disabled:cursor-wait disabled:opacity-60"
           >
-            {isSubmitting ? "Please wait..." : isRegistering ? "Create account" : "Sign in"}
+            {isSubmitting ? "Please wait..." : isRegistering ? `Create ${role === "writer" ? "Writer" : "Student"} account` : "Sign in"}
           </button>
         </form>
 

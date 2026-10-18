@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 type Order = {
   _id: string;
@@ -92,7 +93,10 @@ export default function StudentDashboardPage() {
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col justify-between gap-4 border-b border-[#d9ddda] pb-8 sm:flex-row sm:items-end">
           <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#c94e39]">Student workspace</p>
+            <Link href="/" className="text-xs font-semibold uppercase tracking-[0.3em] text-[#647176] transition hover:text-[#e8664d]">
+              ← AcademicPro
+            </Link>
+            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.3em] text-[#c94e39]">Student workspace</p>
             <h1 className="mt-3 text-4xl font-semibold tracking-tight">Your assignments</h1>
             <p className="mt-3 text-[#647176]">Create a brief, track progress, and keep every deadline visible.</p>
           </div>
