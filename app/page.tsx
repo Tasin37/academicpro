@@ -3,7 +3,7 @@ import SectionHeading from "./components/SectionHeading";
 import ServiceCard from "./components/ServiceCard";
 import StepCard from "./components/StepCard";
 import TestimonialsSection from "./components/TestimonialsSection";
-import FAQItem from "./components/FAQItem";
+import FAQSection from "./components/FAQSection";
 
 const services = [
   {
@@ -43,21 +43,6 @@ const steps = [
     step: "3",
     title: "Review and Submit",
     description: "Approve the final draft, request revisions, and download the finished assignment.",
-  },
-];
-
-const faqs = [
-  {
-    question: "How do I place an assignment order?",
-    answer: "Simply fill out the order form with your course details, topic, deadline, and any attachment you want us to follow.",
-  },
-  {
-    question: "Can I request revisions after delivery?",
-    answer: "Yes, every order includes revision support until you are satisfied with the final paper.",
-  },
-  {
-    question: "Is my personal information kept confidential?",
-    answer: "Absolutely. We keep all details private and treat every order with strict confidentiality.",
   },
 ];
 
@@ -221,18 +206,7 @@ export default function Home() {
 
         <TestimonialsSection />
 
-        <section id="faq" className="px-6 py-20 sm:px-10 lg:px-16">
-          <SectionHeading
-            eyebrow="FAQ"
-            title="Frequently asked questions"
-            description="Get quick answers about deadlines, revisions, and the support process."
-          />
-          <div className="mt-12 grid gap-4 lg:grid-cols-2">
-            {faqs.map((item) => (
-              <FAQItem key={item.question} question={item.question} answer={item.answer} />
-            ))}
-          </div>
-        </section>
+        <FAQSection />
       </main>
 
       <footer id="contact" className="border-t border-[#303e43] bg-[#182329] px-6 py-16 text-slate-100 sm:px-10 lg:px-16">

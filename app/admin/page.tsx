@@ -52,6 +52,13 @@ type BlogItem = {
   createdAt: string;
 };
 
+type FAQItem = {
+  _id: string;
+  question: string;
+  answer: string;
+  isPublished: boolean;
+};
+
 const BLOG_CATEGORIES = [
   "Academic Writing",
   "Formatting & Style",
@@ -61,7 +68,7 @@ const BLOG_CATEGORIES = [
 ];
 
 export default function AdminDashboardPage() {
-  const [activeTab, setActiveTab] = useState<"users" | "orders" | "blogs">("users");
+  const [activeTab, setActiveTab] = useState<"users" | "orders" | "blogs" | "faqs">("users");
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     totalStudents: 0,
@@ -76,6 +83,7 @@ export default function AdminDashboardPage() {
   const [users, setUsers] = useState<UserItem[]>([]);
   const [orders, setOrders] = useState<OrderItem[]>([]);
   const [blogs, setBlogs] = useState<BlogItem[]>([]);
+  const [faqs, setFaqs] = useState<FAQItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -93,14 +101,22 @@ export default function AdminDashboardPage() {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isPublishingBlog, setIsPublishingBlog] = useState(false);
   const coverImageInputRef = useRef<HTMLInputElement | null>(null);
+  const [faqQuestion, setFaqQuestion] = useState("");
+  const [faqAnswer, setFaqAnswer] = useState("");
+  const [faqIsPublished, setFaqIsPublished] = useState(true);
+  const [isSavingFaq, setIsSavingFaq] = useState(false);
+  const [editingFaqId, setEditingFaqId] = useState<string | null>(null);
+  const [editingFaqQuestion, setEditingFaqQuestion] = useState("");
+  const [editingFaqAnswer, setEditingFaqAnswer] = useState("");
 
   async function loadAdminData() {
     try {
-      const [statsRes, usersRes, ordersRes, blogsRes] = await Promise.all([
+      const [statsRes, usersRes, ordersRes, blogsRes, faqsRes] = await Promise.all([
         fetch("/api/admin/stats"),
         fetch("/api/admin/users"),
         fetch("/api/admin/orders"),
         fetch("/api/blogs?all=true"),
+        fetch("/api/faqs?all=true"),
       ]);
 
       if (statsRes.ok) {
@@ -119,6 +135,10 @@ export default function AdminDashboardPage() {
         const blogsData = await blogsRes.json();
         setBlogs(blogsData.posts || []);
       }
+      if (faqsRes.ok) {
+        const faqsData = await faqsRes.json();
+        setFaqs(faqsData.faqs || []);
+      }
     } catch (err) {
       console.error("Failed to load admin dashboard:", err);
     } finally {
@@ -133,13 +153,15 @@ export default function AdminDashboardPage() {
       fetch("/api/admin/users").then((res) => (res.ok ? res.json() : null)),
       fetch("/api/admin/orders").then((res) => (res.ok ? res.json() : null)),
       fetch("/api/blogs?all=true").then((res) => (res.ok ? res.json() : null)),
+      fetch("/api/faqs?all=true").then((res) => (res.ok ? res.json() : null)),
     ])
-      .then(([statsData, usersData, ordersData, blogsData]) => {
+      .then(([statsData, usersData, ordersData, blogsData, faqsData]) => {
         if (!isActive) return;
         if (statsData?.stats) setStats(statsData.stats);
         if (usersData?.users) setUsers(usersData.users);
         if (ordersData?.orders) setOrders(ordersData.orders);
         if (blogsData?.posts) setBlogs(blogsData.posts);
+        if (faqsData?.faqs) setFaqs(faqsData.faqs);
       })
       .catch((err) => console.error("Failed to load admin dashboard:", err))
       .finally(() => {
@@ -275,6 +297,85 @@ export default function AdminDashboardPage() {
       setNotification({ text: "Error uploading image.", type: "error" });
     } finally {
       setIsUploadingImage(false);
+    }
+  }
+
+  async function handleCreateFaq(e: React.FormEvent) {
+    e.preventDefault();
+    if (!faqQuestion.trim() || !faqAnswer.trim()) {
+      setNotification({ text: "Question and answer are required.", type: "error" });
+      return;
+    }
+
+    setIsSavingFaq(true);
+    setNotification(null);
+    try {
+      const res = await fetch("/api/faqs", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: faqQuestion.trim(),
+          answer: faqAnswer.trim(),
+          isPublished: faqIsPublished,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setNotification({ text: data.error || "Failed to create FAQ.", type: "error" });
+        return;
+      }
+      setFaqQuestion("");
+      setFaqAnswer("");
+      setFaqIsPublished(true);
+      setNotification({ text: "FAQ created successfully.", type: "success" });
+      await loadAdminData();
+    } catch {
+      setNotification({ text: "Network error while creating FAQ.", type: "error" });
+    } finally {
+      setIsSavingFaq(false);
+    }
+  }
+
+  async function handleFaqUpdate(id: string, changes: { question?: string; answer?: string; isPublished?: boolean }) {
+    setUpdatingId(id);
+    setNotification(null);
+    try {
+      const res = await fetch("/api/faqs", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, ...changes }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setNotification({ text: "FAQ updated successfully.", type: "success" });
+        await loadAdminData();
+      } else {
+        setNotification({ text: data.error || "Failed to update FAQ.", type: "error" });
+      }
+    } catch {
+      setNotification({ text: "Network error while updating FAQ.", type: "error" });
+    } finally {
+      setUpdatingId(null);
+    }
+  }
+
+  async function handleDeleteFaq(id: string) {
+    if (!window.confirm("Delete this FAQ? This action cannot be undone.")) return;
+    setUpdatingId(id);
+    setNotification(null);
+    try {
+      const res = await fetch(`/api/faqs?id=${id}`, { method: "DELETE" });
+      const data = await res.json();
+      if (res.ok) {
+        setNotification({ text: "FAQ deleted successfully.", type: "success" });
+        await loadAdminData();
+      } else {
+        setNotification({ text: data.error || "Failed to delete FAQ.", type: "error" });
+      }
+    } catch {
+      setNotification({ text: "Network error while deleting FAQ.", type: "error" });
+    } finally {
+      setUpdatingId(null);
     }
   }
 
@@ -485,6 +586,17 @@ export default function AdminDashboardPage() {
               }`}
             >
               Blog Management ({blogs.length})
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("faqs")}
+              className={`pb-4 px-6 text-sm font-semibold transition border-b-2 ${
+                activeTab === "faqs"
+                  ? "border-[#e8664d] text-[#182329]"
+                  : "border-transparent text-[#647176] hover:text-[#182329]"
+              }`}
+            >
+              FAQ Management ({faqs.length})
             </button>
           </div>
 
@@ -813,6 +925,7 @@ export default function AdminDashboardPage() {
                           )}
                         </div>
                       ) : null}
+
                     </div>
 
                     <div className="flex items-center justify-between border-t border-slate-100 pt-5">
@@ -932,6 +1045,130 @@ export default function AdminDashboardPage() {
                       </tbody>
                     </table>
                   </div>
+                </div>
+              </div>
+            ) : null}
+
+            {activeTab === "faqs" ? (
+              <div className="space-y-8">
+                <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-xs sm:p-8">
+                  <h2 className="text-xl font-bold text-[#182329]">Add a FAQ</h2>
+                  <p className="mt-1 text-xs text-slate-500">Create questions and answers shown in the public FAQ section.</p>
+                  <form onSubmit={handleCreateFaq} className="mt-6 space-y-4">
+                    <input
+                      required
+                      placeholder="Question"
+                      value={faqQuestion}
+                      onChange={(e) => setFaqQuestion(e.target.value)}
+                      className="h-11 w-full rounded-xl bg-[#f1f4f6] px-4 text-sm outline-none focus:bg-white focus:ring-2 focus:ring-[#416169]/25"
+                    />
+                    <textarea
+                      required
+                      rows={4}
+                      placeholder="Answer"
+                      value={faqAnswer}
+                      onChange={(e) => setFaqAnswer(e.target.value)}
+                      className="w-full rounded-xl bg-[#f1f4f6] p-4 text-sm outline-none focus:bg-white focus:ring-2 focus:ring-[#416169]/25"
+                    />
+                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                      <input type="checkbox" checked={faqIsPublished} onChange={(e) => setFaqIsPublished(e.target.checked)} />
+                      Publish immediately
+                    </label>
+                    <button
+                      type="submit"
+                      disabled={isSavingFaq}
+                      className="rounded-xl bg-[#416169] px-5 py-3 text-xs font-bold text-white transition hover:bg-[#324d54] disabled:opacity-60"
+                    >
+                      {isSavingFaq ? "Saving..." : "Add FAQ"}
+                    </button>
+                  </form>
+                </div>
+
+                <div className="space-y-4">
+                  {faqs.map((faq) => (
+                    <div key={faq._id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs">
+                      <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                        <div className="min-w-0 flex-1">
+                          {editingFaqId === faq._id ? (
+                            <div className="space-y-3">
+                              <input
+                                value={editingFaqQuestion}
+                                onChange={(e) => setEditingFaqQuestion(e.target.value)}
+                                className="h-10 w-full rounded-lg bg-[#f1f4f6] px-3 text-sm outline-none focus:bg-white focus:ring-2 focus:ring-[#416169]/25"
+                              />
+                              <textarea
+                                rows={3}
+                                value={editingFaqAnswer}
+                                onChange={(e) => setEditingFaqAnswer(e.target.value)}
+                                className="w-full rounded-lg bg-[#f1f4f6] p-3 text-sm outline-none focus:bg-white focus:ring-2 focus:ring-[#416169]/25"
+                              />
+                              <div className="flex gap-2">
+                                <button
+                                  type="button"
+                                  disabled={updatingId === faq._id}
+                                  onClick={async () => {
+                                    await handleFaqUpdate(faq._id, {
+                                      question: editingFaqQuestion.trim(),
+                                      answer: editingFaqAnswer.trim(),
+                                    });
+                                    setEditingFaqId(null);
+                                  }}
+                                  className="rounded-lg bg-[#416169] px-3 py-1.5 text-xs font-bold text-white disabled:opacity-60"
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setEditingFaqId(null)}
+                                  className="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600"
+                                >
+                                  Cancel
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <>
+                              <h3 className="font-bold text-[#182329]">{faq.question}</h3>
+                              <p className="mt-2 text-sm leading-6 text-slate-600">{faq.answer}</p>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex shrink-0 items-center gap-3">
+                          <button
+                            type="button"
+                            disabled={updatingId === faq._id}
+                            onClick={() => {
+                              setEditingFaqId(faq._id);
+                              setEditingFaqQuestion(faq.question);
+                              setEditingFaqAnswer(faq.answer);
+                            }}
+                            className="text-xs font-semibold text-[#416169] hover:text-[#324d54]"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            disabled={updatingId === faq._id}
+                            onClick={() => handleFaqUpdate(faq._id, { isPublished: !faq.isPublished })}
+                            className={`rounded-full px-3 py-1 text-[10px] font-bold uppercase ${
+                              faq.isPublished ? "bg-emerald-100 text-emerald-800" : "bg-slate-100 text-slate-600"
+                            }`}
+                          >
+                            {faq.isPublished ? "Published" : "Hidden"}
+                          </button>
+                          <button
+                            type="button"
+                            disabled={updatingId === faq._id}
+                            onClick={() => handleDeleteFaq(faq._id)}
+                            className="text-xs font-semibold text-rose-600 hover:text-rose-800"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {faqs.length === 0 ? <p className="text-sm text-slate-500">No FAQs have been created yet.</p> : null}
                 </div>
               </div>
             ) : null}

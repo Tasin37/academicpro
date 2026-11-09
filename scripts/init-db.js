@@ -13,6 +13,7 @@ const COLLECTIONS = [
   'orders',
   'posts',
   'testimonials',
+  'faqs',
   'payments',
   'reviews',
   'messages',
