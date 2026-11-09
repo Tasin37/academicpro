@@ -39,6 +39,7 @@ export default function StudentDashboardPage() {
 
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadError, setLoadError] = useState("");
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -74,6 +75,8 @@ export default function StudentDashboardPage() {
   }, []);
 
   async function loadOrders() {
+    setIsRefreshing(true);
+    setLoadError("");
     try {
       const response = await fetch("/api/orders");
       if (response.ok) {
@@ -84,6 +87,8 @@ export default function StudentDashboardPage() {
       }
     } catch {
       setLoadError("Network error while loading your orders.");
+    } finally {
+      setIsRefreshing(false);
     }
   }
 
@@ -244,13 +249,23 @@ export default function StudentDashboardPage() {
               Submit detailed instructions, upload materials, and monitor your assignments in real-time.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => void signOut({ callbackUrl: "/" })}
-            className="text-xs font-bold uppercase tracking-wider text-[#c94e39] transition hover:text-[#e8664d]"
-          >
-            Sign out
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => void loadOrders()}
+              disabled={isRefreshing}
+              className="rounded-full border border-[#d9ddda] bg-white px-4 py-2.5 text-sm font-semibold text-[#182329] transition hover:border-[#182329] disabled:cursor-wait disabled:opacity-60"
+            >
+              {isRefreshing ? "Refreshing..." : "↻ Refresh"}
+            </button>
+            <button
+              type="button"
+              onClick={() => void signOut({ callbackUrl: "/" })}
+              className="rounded-full border border-[#c94e39] bg-[#c94e39] px-5 py-2.5 text-sm font-semibold text-white transition hover:border-[#a83b2c] hover:bg-[#a83b2c]"
+            >
+              Sign out
+            </button>
+          </div>
         </div>
 
         {/* 2-Column Responsive Workspace Grid */}

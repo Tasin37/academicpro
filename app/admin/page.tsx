@@ -86,6 +86,7 @@ export default function AdminDashboardPage() {
   const [blogs, setBlogs] = useState<BlogItem[]>([]);
   const [faqs, setFaqs] = useState<FAQItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [roleFilter, setRoleFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -111,6 +112,7 @@ export default function AdminDashboardPage() {
   const [editingFaqAnswer, setEditingFaqAnswer] = useState("");
 
   async function loadAdminData() {
+    setIsRefreshing(true);
     try {
       const [statsRes, usersRes, ordersRes, blogsRes, faqsRes] = await Promise.all([
         fetch("/api/admin/stats"),
@@ -144,6 +146,7 @@ export default function AdminDashboardPage() {
       console.error("Failed to load admin dashboard:", err);
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   }
 
@@ -496,9 +499,10 @@ export default function AdminDashboardPage() {
             <button
               type="button"
               onClick={() => void loadAdminData()}
-              className="rounded-full border border-[#d9ddda] bg-white px-4 py-2.5 text-sm font-semibold text-[#182329] transition hover:border-[#182329]"
+              disabled={isRefreshing}
+              className="rounded-full border border-[#d9ddda] bg-white px-4 py-2.5 text-sm font-semibold text-[#182329] transition hover:border-[#182329] disabled:cursor-wait disabled:opacity-60"
             >
-              ↻ Refresh
+              {isRefreshing ? "Refreshing..." : "↻ Refresh"}
             </button>
             <button
               type="button"

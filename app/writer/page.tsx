@@ -44,6 +44,7 @@ export default function WriterDashboardPage() {
     totalEarnings: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [alertMessage, setAlertMessage] = useState<{ text: string; type: "success" | "error" } | null>(null);
 
@@ -57,6 +58,7 @@ export default function WriterDashboardPage() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   async function loadData() {
+    setIsRefreshing(true);
     try {
       const res = await fetch("/api/writer/orders");
       if (res.ok) {
@@ -71,6 +73,7 @@ export default function WriterDashboardPage() {
       console.error("Failed to load writer data:", err);
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   }
 
@@ -242,9 +245,10 @@ export default function WriterDashboardPage() {
             <button
               type="button"
               onClick={() => void loadData()}
-              className="rounded-full border border-[#d9ddda] bg-white px-4 py-2.5 text-sm font-semibold text-[#182329] transition hover:border-[#182329]"
+              disabled={isRefreshing}
+              className="rounded-full border border-[#d9ddda] bg-white px-4 py-2.5 text-sm font-semibold text-[#182329] transition hover:border-[#182329] disabled:cursor-wait disabled:opacity-60"
             >
-              ↻ Refresh
+              {isRefreshing ? "Refreshing..." : "↻ Refresh"}
             </button>
             <button
               type="button"
