@@ -4,6 +4,7 @@ import ServiceCard from "./components/ServiceCard";
 import StepCard from "./components/StepCard";
 import TestimonialsSection from "./components/TestimonialsSection";
 import FAQSection from "./components/FAQSection";
+import HomeHeader from "./components/HomeHeader";
 
 const services = [
   {
@@ -49,39 +50,7 @@ const steps = [
 export default function Home() {
   return (
     <div className="page-grid text-[#182329]">
-      <header className="sticky top-0 z-10 border-b border-[#d9ddda]/80 bg-[#f5f4f0]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <Link className="flex items-center gap-3 text-lg font-semibold tracking-tight text-[#182329]" href="/">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e8664d] text-xs font-bold text-white">A</span>
-            Academic<span className="text-[#e8664d]">Pro</span>
-          </Link>
-          <nav className="hidden items-center gap-8 text-sm font-medium text-[#647176] md:flex">
-            <Link href="/services" className="transition hover:text-[#e8664d]">
-              Services
-            </Link>
-            <a href="#how-it-works" className="transition hover:text-[#e8664d]">
-              Process
-            </a>
-            <Link href="/blog" className="transition hover:text-[#e8664d]">
-              Blog
-            </Link>
-            <Link href="/contact" className="transition hover:text-[#e8664d]">
-              Contact
-            </Link>
-          </nav>
-          <div className="flex items-center gap-3">
-            <Link href="/auth" className="hidden text-sm font-semibold text-[#182329] transition hover:text-[#e8664d] sm:inline-flex">
-              Sign in
-            </Link>
-            <Link
-              href="/auth?mode=register"
-              className="rounded-full bg-[#182329] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#e8664d]"
-            >
-              Get started
-            </Link>
-          </div>
-        </div>
-      </header>
+      <HomeHeader />
 
       <main>
         <section id="hero" className="relative overflow-hidden bg-[#182329] px-6 py-24 text-white sm:px-10 lg:px-16 lg:py-32">

@@ -10,6 +10,7 @@ import { NotificationSchema, type INotification } from './Notification';
 import { PostSchema, type IPost } from './Post';
 import { TestimonialSchema, type ITestimonial } from './Testimonial';
 import { FAQSchema, type IFAQ } from './FAQ';
+import { ContactInquirySchema, type IContactInquiry } from './ContactInquiry';
 
 export const User: mongoose.Model<IUser> =
   (mongoose.models.User as mongoose.Model<IUser>) || mongoose.model<IUser>('User', UserSchema);
@@ -43,3 +44,7 @@ export const Testimonial: mongoose.Model<ITestimonial> =
 
 export const FAQ: mongoose.Model<IFAQ> =
   (mongoose.models.FAQ as mongoose.Model<IFAQ>) || mongoose.model<IFAQ>('FAQ', FAQSchema);
+
+export const ContactInquiry: mongoose.Model<IContactInquiry> =
+  (mongoose.models.ContactInquiry as mongoose.Model<IContactInquiry>) ||
+  mongoose.model<IContactInquiry>('ContactInquiry', ContactInquirySchema);

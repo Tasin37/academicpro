@@ -172,6 +172,7 @@ proxy.ts                 Authentication and role-based route protection
 | `/api/auth/[...nextauth]` | NextAuth sign-in and session handling |
 | `/api/auth/register` | Student and writer registration |
 | `/api/orders` | Student order creation and order retrieval |
+| `/api/contact` | Public contact inquiry submission |
 | `/api/writer/orders` | Writer order browsing, claiming, and delivery |
 | `/api/admin/users` | Admin user management |
 | `/api/admin/orders` | Admin order management |

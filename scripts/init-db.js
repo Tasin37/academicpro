@@ -14,6 +14,7 @@ const COLLECTIONS = [
   'posts',
   'testimonials',
   'faqs',
+  'contactinquiries',
   'payments',
   'reviews',
   'messages',

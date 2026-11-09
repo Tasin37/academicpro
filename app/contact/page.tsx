@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from "react";
-import Link from "next/link";
 import SectionHeading from "../components/SectionHeading";
+import HomeHeader from "../components/HomeHeader";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -10,30 +10,36 @@ export default function ContactPage() {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSubmitted(true);
+    setError("");
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, subject, message }),
+      });
+      const data = (await response.json()) as { error?: string };
+      if (!response.ok) {
+        setError(data.error || "Unable to send your message.");
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setError("A network error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   return (
     <div className="page-grid min-h-screen text-[#182329]">
-      <header className="sticky top-0 z-10 border-b border-[#d9ddda]/80 bg-[#f5f4f0]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <Link href="/" className="flex items-center gap-3 text-lg font-semibold tracking-tight text-[#182329]">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e8664d] text-xs font-bold text-white">A</span>
-            Academic<span className="text-[#e8664d]">Pro</span>
-          </Link>
-          <nav className="flex items-center gap-6 text-sm font-medium text-[#647176]">
-            <Link href="/" className="transition hover:text-[#e8664d]">Home</Link>
-            <Link href="/services" className="transition hover:text-[#e8664d]">Services</Link>
-            <Link href="/blog" className="transition hover:text-[#e8664d]">Blog</Link>
-            <Link href="/auth" className="rounded-full bg-[#182329] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#e8664d]">
-              Sign in
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <HomeHeader />
 
       <main className="mx-auto max-w-5xl px-6 py-20 sm:px-10 lg:px-16">
         <SectionHeading
@@ -80,6 +86,7 @@ export default function ContactPage() {
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
                 <h2 className="text-xl font-semibold">Send a message</h2>
+                {error ? <p role="alert" className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{error}</p> : null}
                 <div className="grid gap-4 sm:grid-cols-2">
                   <div>
                     <label htmlFor="name" className="block text-xs font-semibold uppercase tracking-wider text-[#39484d]">Name</label>
@@ -130,9 +137,10 @@ export default function ContactPage() {
                 </div>
                 <button
                   type="submit"
-                  className="w-full rounded-full bg-[#182329] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#e8664d]"
+                  disabled={isSubmitting}
+                  className="w-full rounded-full bg-[#182329] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#e8664d] disabled:cursor-wait disabled:opacity-60"
                 >
-                  Submit Inquiry
+                  {isSubmitting ? "Sending..." : "Submit Inquiry"}
                 </button>
               </form>
             )}

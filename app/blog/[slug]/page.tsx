@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
+import HomeHeader from "../../components/HomeHeader";
 
 type BlogPost = {
   _id: string;
@@ -114,24 +115,7 @@ export default function BlogPostPage() {
 
   return (
     <div className="page-grid min-h-screen text-[#182329]">
-      {/* Header */}
-      <header className="sticky top-0 z-10 border-b border-[#d9ddda]/80 bg-[#f5f4f0]/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-5">
-          <Link href="/" className="flex items-center gap-3 text-lg font-semibold tracking-tight text-[#182329]">
-            <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#e8664d] text-xs font-bold text-white">A</span>
-            Academic<span className="text-[#e8664d]">Pro</span>
-          </Link>
-          <nav className="flex items-center gap-6 text-sm font-medium text-[#647176]">
-            <Link href="/" className="transition hover:text-[#e8664d]">Home</Link>
-            <Link href="/services" className="transition hover:text-[#e8664d]">Services</Link>
-            <Link href="/blog" className="text-[#e8664d] font-semibold">Blog</Link>
-            <Link href="/contact" className="transition hover:text-[#e8664d]">Contact</Link>
-            <Link href="/auth" className="rounded-full bg-[#182329] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#e8664d]">
-              Sign in
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <HomeHeader />
 
       <main className="mx-auto max-w-4xl px-6 py-16 sm:px-10">
         {/* Navigation Breadcrumb */}

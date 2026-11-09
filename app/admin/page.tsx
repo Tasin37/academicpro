@@ -588,9 +588,9 @@ export default function AdminDashboardPage() {
                 type="button"
                 onClick={() => setIsMobileMenuOpen(false)}
                 aria-label="Close admin navigation menu"
-                className="absolute inset-0 bg-[#182329]/45"
+                className="fixed inset-0 z-[55] bg-[#182329]/45"
               />
-              <div className="absolute right-0 top-0 h-full w-[min(20rem,85vw)] bg-[#fbfaf7] p-6 shadow-2xl">
+              <div className="fixed inset-y-0 right-0 z-[60] w-[min(20rem,85vw)] isolate overflow-y-auto border-l border-[#d9ddda] bg-white p-6 text-[#182329] shadow-2xl">
                 <div className="flex items-center justify-between border-b border-[#d9ddda] pb-5">
                   <p className="text-sm font-bold uppercase tracking-wider text-[#182329]">Admin Menu</p>
                   <button
