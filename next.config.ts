@@ -2,6 +2,7 @@ import path from "node:path";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  serverExternalPackages: ["mongoose", "mongodb", "bcryptjs"],
   turbopack: {
     root: path.resolve(__dirname),
   },

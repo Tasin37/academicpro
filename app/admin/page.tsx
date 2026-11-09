@@ -87,7 +87,26 @@ export default function AdminDashboardPage() {
   }
 
   useEffect(() => {
-    loadAdminData();
+    let isActive = true;
+    Promise.all([
+      fetch("/api/admin/stats").then((res) => (res.ok ? res.json() : null)),
+      fetch("/api/admin/users").then((res) => (res.ok ? res.json() : null)),
+      fetch("/api/admin/orders").then((res) => (res.ok ? res.json() : null)),
+    ])
+      .then(([statsData, usersData, ordersData]) => {
+        if (!isActive) return;
+        if (statsData?.stats) setStats(statsData.stats);
+        if (usersData?.users) setUsers(usersData.users);
+        if (ordersData?.orders) setOrders(ordersData.orders);
+      })
+      .catch((err) => console.error("Failed to load admin dashboard:", err))
+      .finally(() => {
+        if (isActive) setLoading(false);
+      });
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   async function handleRoleChange(userId: string, newRole: string) {

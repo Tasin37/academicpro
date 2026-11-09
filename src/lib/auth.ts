@@ -6,10 +6,17 @@ import clientPromise from "./mongodb";
 import { mongooseConnect } from "./mongoose";
 import { User } from "@/src/models/models";
 
+// Session timeout: default 30 minutes (configurable via SESSION_MAX_AGE_SECONDS)
+const sessionMaxAge = Number(process.env.SESSION_MAX_AGE_SECONDS) || 30 * 60;
+
 export const authOptions: NextAuthOptions = {
   adapter: MongoDBAdapter(clientPromise),
   session: {
     strategy: "jwt",
+    maxAge: sessionMaxAge,
+  },
+  jwt: {
+    maxAge: sessionMaxAge,
   },
   pages: {
     signIn: "/auth",

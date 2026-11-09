@@ -18,6 +18,7 @@ function AuthForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const callbackUrl = searchParams.get("callbackUrl");
+  const reason = searchParams.get("reason");
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -82,6 +83,12 @@ function AuthForm() {
             ? "Choose your account type and start collaborating."
             : "Use your account to access your dashboard and assignments."}
         </p>
+
+        {reason === "timeout" ? (
+          <div className="mt-4 border border-amber-300 bg-amber-50 p-3 text-xs font-semibold text-amber-800">
+            You were automatically signed out due to inactivity. Please sign in again.
+          </div>
+        ) : null}
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           {isRegistering ? (

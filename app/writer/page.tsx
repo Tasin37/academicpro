@@ -58,7 +58,23 @@ export default function WriterDashboardPage() {
   }
 
   useEffect(() => {
-    loadData();
+    let isActive = true;
+    fetch("/api/writer/orders")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!isActive || !data) return;
+        setAvailableOrders(data.availableOrders || []);
+        setMyOrders(data.myOrders || []);
+        if (data.stats) setStats(data.stats);
+      })
+      .catch((err) => console.error("Failed to load writer data:", err))
+      .finally(() => {
+        if (isActive) setLoading(false);
+      });
+
+    return () => {
+      isActive = false;
+    };
   }, []);
 
   async function handleClaimOrder(orderId: string) {
@@ -257,7 +273,7 @@ export default function WriterDashboardPage() {
                 {myOrders.length === 0 ? (
                   <div className="border border-dashed border-[#b9c1bd] bg-[#fbfaf7] p-16 text-center text-[#647176]">
                     <p className="text-lg font-semibold text-[#182329]">You have not claimed any assignments yet</p>
-                    <p className="mt-2 text-sm">Switch to the "Available Opportunities" tab to claim pending briefs.</p>
+                    <p className="mt-2 text-sm">Switch to the &quot;Available Opportunities&quot; tab to claim pending briefs.</p>
                   </div>
                 ) : (
                   <div className="space-y-4">

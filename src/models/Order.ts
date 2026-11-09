@@ -13,6 +13,10 @@ export enum OrderStatus {
 export interface IOrder extends Document {
   studentId: Types.ObjectId;
   writerId?: Types.ObjectId;
+  studentName?: string;
+  studentEmail?: string;
+  whatsappNumber?: string;
+  subjectCode?: string;
   title: string;
   description: string;
   subject: string;
@@ -22,6 +26,7 @@ export interface IOrder extends Document {
   budget: number;
   status: OrderStatus;
   attachments?: string[];
+  cloudLink?: string;
   notes?: string;
   submittedDocument?: string;
   completedAt?: Date;
@@ -41,6 +46,22 @@ export const OrderSchema = new Schema<IOrder>(
     writerId: {
       type: Schema.Types.ObjectId,
       ref: 'Writer',
+    },
+    studentName: {
+      type: String,
+      trim: true,
+    },
+    studentEmail: {
+      type: String,
+      trim: true,
+    },
+    whatsappNumber: {
+      type: String,
+      trim: true,
+    },
+    subjectCode: {
+      type: String,
+      trim: true,
     },
     title: {
       type: String,
@@ -67,6 +88,7 @@ export const OrderSchema = new Schema<IOrder>(
     academicLevel: {
       type: String,
       enum: ['High School', 'Associate', 'Bachelor', 'Master', 'PhD'],
+      default: 'Bachelor',
       required: true,
     },
     budget: {
@@ -80,6 +102,10 @@ export const OrderSchema = new Schema<IOrder>(
       default: OrderStatus.PENDING,
     },
     attachments: [String],
+    cloudLink: {
+      type: String,
+      trim: true,
+    },
     notes: {
       type: String,
       maxlength: 2000,
