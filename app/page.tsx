@@ -2,7 +2,7 @@ import Link from "next/link";
 import SectionHeading from "./components/SectionHeading";
 import ServiceCard from "./components/ServiceCard";
 import StepCard from "./components/StepCard";
-import TestimonialCard from "./components/TestimonialCard";
+import TestimonialsSection from "./components/TestimonialsSection";
 import FAQItem from "./components/FAQItem";
 
 const services = [
@@ -43,19 +43,6 @@ const steps = [
     step: "3",
     title: "Review and Submit",
     description: "Approve the final draft, request revisions, and download the finished assignment.",
-  },
-];
-
-const testimonials = [
-  {
-    quote: "The team helped me turn a late assignment into an A-grade submission with clean research and formatting.",
-    name: "Maya Johnson",
-    role: "Undergraduate Student",
-  },
-  {
-    quote: "Clear communication and fast delivery made the whole process stress-free during finals week.",
-    name: "David Lee",
-    role: "Graduate Researcher",
   },
 ];
 
@@ -232,18 +219,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="bg-slate-100 px-6 py-20 sm:px-10 lg:px-16">
-          <SectionHeading
-            eyebrow="Testimonials"
-            title="Students trust AcademicPro"
-            description="Real feedback from learners who achieved better grades and reduced stress with our support."
-          />
-          <div className="mt-14 grid gap-6 md:grid-cols-2">
-            {testimonials.map((item) => (
-              <TestimonialCard key={item.name} quote={item.quote} name={item.name} role={item.role} />
-            ))}
-          </div>
-        </section>
+        <TestimonialsSection />
 
         <section id="faq" className="px-6 py-20 sm:px-10 lg:px-16">
           <SectionHeading

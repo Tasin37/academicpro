@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { signOut, getSession } from "next-auth/react";
 import Link from "next/link";
+import { calculateAssignmentPrice, PRICE_OPTIONS } from "@/src/lib/pricing";
 
 type Order = {
   _id: string;
@@ -49,10 +50,12 @@ export default function StudentDashboardPage() {
   const [deadlineDate, setDeadlineDate] = useState(getTomorrowDate());
   const [deadlineTime, setDeadlineTime] = useState("23:00");
   const [pages, setPages] = useState(1);
+  const [pricePerPage, setPricePerPage] = useState(15);
   const [description, setDescription] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [cloudLink, setCloudLink] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const estimatedPrice = calculateAssignmentPrice(pages, pricePerPage);
 
   // Auto-fill student name and email from session asynchronously
   useEffect(() => {
@@ -176,6 +179,7 @@ export default function StudentDashboardPage() {
           subjectCode: subjectCode.trim(),
           deadline: combinedDeadline.toISOString(),
           pages,
+          budget: pricePerPage,
           description: description.trim(),
           cloudLink: cloudLink.trim(),
           attachments: uploadedUrls,
@@ -421,6 +425,39 @@ export default function StudentDashboardPage() {
                     </button>
                   </div>
                 </div>
+              </div>
+
+              <div className="rounded-2xl border border-[#d6e1e4] bg-[#eef5f6] p-5">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#416169]">
+                      PRICE PER PAGE
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {PRICE_OPTIONS.map((option) => (
+                        <button
+                          key={option}
+                          type="button"
+                          onClick={() => setPricePerPage(option)}
+                          className={`rounded-lg border px-3 py-1.5 text-xs font-bold transition ${
+                            pricePerPage === option
+                              ? "border-[#416169] bg-[#416169] text-white"
+                              : "border-[#c9d7da] bg-white text-[#416169] hover:border-[#416169]"
+                          }`}
+                        >
+                          ${option}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-bold uppercase tracking-wider text-[#416169]">ESTIMATED TOTAL</p>
+                    <p className="mt-1 text-2xl font-bold text-[#182329]">${estimatedPrice.toFixed(2)}</p>
+                  </div>
+                </div>
+                <p className="mt-3 border-t border-[#d6e1e4] pt-3 text-[11px] leading-relaxed text-slate-500">
+                  Based on {pages} {pages === 1 ? "page" : "pages"} at ${pricePerPage} per page. This is an estimate only; no payment is required here.
+                </p>
               </div>
 
               {/* Row 4: Assignment Description */}

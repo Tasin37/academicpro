@@ -4,6 +4,7 @@ import { authOptions } from "@/src/lib/auth";
 import { mongooseConnect } from "@/src/lib/mongoose";
 import { Order, Student } from "@/src/models/models";
 import { OrderStatus } from "@/src/models/Order";
+import { calculateAssignmentPrice, PRICE_OPTIONS, type PricePerPage } from "@/src/lib/pricing";
 
 type OrderBody = {
   name?: string;
@@ -91,10 +92,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Please select a valid future deadline." }, { status: 400 });
     }
 
-    let budget = Number(body.budget);
-    if (!Number.isFinite(budget) || budget < 0) {
-      budget = 0;
-    }
+    const requestedPricePerPage = Number(body.budget);
+    const pricePerPage = PRICE_OPTIONS.includes(requestedPricePerPage as PricePerPage)
+      ? requestedPricePerPage
+      : 15;
+    const budget = calculateAssignmentPrice(pages, pricePerPage);
 
     let notes = body.notes?.trim() || "";
     const cloudLink = body.cloudLink?.trim() || "";

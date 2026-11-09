@@ -11,6 +11,7 @@ function AuthForm() {
   const searchParams = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [role, setRole] = useState<"student" | "writer">("student");
@@ -166,14 +167,24 @@ function AuthForm() {
             <label htmlFor="password" className="block text-sm font-medium text-[#39484d]">
               Password
             </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              required
-              className="mt-2 w-full border border-[#d9ddda] bg-[#f5f4f0] px-4 py-3 outline-none transition focus:border-[#e8664d]"
-            />
+            <div className="relative mt-2">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                required
+                className="w-full border border-[#d9ddda] bg-[#f5f4f0] px-4 py-3 pr-16 outline-none transition focus:border-[#e8664d]"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword((value) => !value)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute inset-y-0 right-0 px-4 text-xs font-semibold text-[#647176] transition hover:text-[#e8664d]"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
           </div>
 
           {error ? <p role="alert" className="text-sm text-[#c94e39]">{error}</p> : null}
