@@ -75,7 +75,13 @@ export async function PATCH(request: Request) {
     }
 
     const { writer } = auth;
-    const body = (await request.json()) as { orderId?: string; action?: "claim" | "submit" };
+    const body = (await request.json()) as {
+      orderId?: string;
+      action?: "claim" | "submit";
+      submittedFiles?: string[];
+      submittedCloudLink?: string;
+      submissionNotes?: string;
+    };
 
     if (!body.orderId || !body.action) {
       return NextResponse.json({ error: "Order ID and action are required." }, { status: 400 });
@@ -104,8 +110,25 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ error: "Order not found or not assigned to you." }, { status: 404 });
       }
 
+      const submittedFiles = Array.isArray(body.submittedFiles)
+        ? body.submittedFiles.filter((f): f is string => typeof f === "string" && f.length > 0)
+        : [];
+      const submittedCloudLink = body.submittedCloudLink?.trim() || "";
+      const submissionNotes = body.submissionNotes?.trim() || "";
+
+      if (submittedFiles.length === 0 && !submittedCloudLink && !submissionNotes) {
+        return NextResponse.json(
+          { error: "Please upload at least one completed file or provide a cloud storage link." },
+          { status: 400 }
+        );
+      }
+
       order.status = OrderStatus.SUBMITTED;
       order.completedAt = new Date();
+      order.submittedFiles = submittedFiles;
+      order.submittedDocument = submittedFiles[0] || submittedCloudLink || "";
+      order.submittedCloudLink = submittedCloudLink || undefined;
+      order.submissionNotes = submissionNotes || undefined;
       await order.save();
 
       await Writer.updateOne(
@@ -118,7 +141,7 @@ export async function PATCH(request: Request) {
         }
       );
 
-      return NextResponse.json({ message: "Draft submitted successfully!", order });
+      return NextResponse.json({ message: "Assignment submitted successfully!", order });
     }
 
     return NextResponse.json({ error: "Invalid action." }, { status: 400 });

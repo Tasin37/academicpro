@@ -87,9 +87,6 @@ export default function Home() {
             <Link href="/services" className="transition hover:text-[#e8664d]">
               Services
             </Link>
-            <Link href="/pricing" className="transition hover:text-[#e8664d]">
-              Pricing
-            </Link>
             <a href="#how-it-works" className="transition hover:text-[#e8664d]">
               Process
             </a>
@@ -285,9 +282,6 @@ export default function Home() {
           <div className="flex flex-wrap gap-6">
             <Link href="/services" className="transition hover:text-white">
               Services
-            </Link>
-            <Link href="/pricing" className="transition hover:text-white">
-              Pricing
             </Link>
             <Link href="/blog" className="transition hover:text-white">
               Blog

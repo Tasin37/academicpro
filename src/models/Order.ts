@@ -23,12 +23,15 @@ export interface IOrder extends Document {
   deadline: Date;
   pages?: number;
   academicLevel: string;
-  budget: number;
+  budget?: number;
   status: OrderStatus;
   attachments?: string[];
   cloudLink?: string;
   notes?: string;
   submittedDocument?: string;
+  submittedFiles?: string[];
+  submissionNotes?: string;
+  submittedCloudLink?: string;
   completedAt?: Date;
   cancelledAt?: Date;
   cancelReason?: string;
@@ -93,7 +96,7 @@ export const OrderSchema = new Schema<IOrder>(
     },
     budget: {
       type: Number,
-      required: true,
+      default: 0,
       min: 0,
     },
     status: {
@@ -111,6 +114,9 @@ export const OrderSchema = new Schema<IOrder>(
       maxlength: 2000,
     },
     submittedDocument: String,
+    submittedFiles: [String],
+    submissionNotes: String,
+    submittedCloudLink: String,
     completedAt: Date,
     cancelledAt: Date,
     cancelReason: String,

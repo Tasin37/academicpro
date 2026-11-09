@@ -36,7 +36,6 @@ export default function ServicesPage() {
           </Link>
           <nav className="flex items-center gap-6 text-sm font-medium text-[#647176]">
             <Link href="/" className="transition hover:text-[#e8664d]">Home</Link>
-            <Link href="/pricing" className="transition hover:text-[#e8664d]">Pricing</Link>
             <Link href="/blog" className="transition hover:text-[#e8664d]">Blog</Link>
             <Link href="/contact" className="transition hover:text-[#e8664d]">Contact</Link>
             <Link href="/auth" className="rounded-full bg-[#182329] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#e8664d]">
@@ -77,10 +76,10 @@ export default function ServicesPage() {
               Get Started Now
             </Link>
             <Link
-              href="/pricing"
+              href="/contact"
               className="rounded-full border border-[#d9ddda] bg-white px-8 py-3 text-sm font-semibold text-[#182329] transition hover:border-[#182329]"
             >
-              View Pricing
+              Contact Us
             </Link>
           </div>
         </div>

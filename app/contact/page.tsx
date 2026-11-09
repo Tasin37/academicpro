@@ -27,7 +27,6 @@ export default function ContactPage() {
           <nav className="flex items-center gap-6 text-sm font-medium text-[#647176]">
             <Link href="/" className="transition hover:text-[#e8664d]">Home</Link>
             <Link href="/services" className="transition hover:text-[#e8664d]">Services</Link>
-            <Link href="/pricing" className="transition hover:text-[#e8664d]">Pricing</Link>
             <Link href="/blog" className="transition hover:text-[#e8664d]">Blog</Link>
             <Link href="/auth" className="rounded-full bg-[#182329] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#e8664d]">
               Sign in

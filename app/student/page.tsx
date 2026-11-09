@@ -19,6 +19,11 @@ type Order = {
   attachments?: string[];
   cloudLink?: string;
   description?: string;
+  submittedDocument?: string;
+  submittedFiles?: string[];
+  submissionNotes?: string;
+  submittedCloudLink?: string;
+  completedAt?: string;
   createdAt?: string;
 };
 
@@ -624,6 +629,75 @@ export default function StudentDashboardPage() {
                         <p className="mt-2 text-xs leading-relaxed text-[#647176] line-clamp-2">
                           {order.description}
                         </p>
+                      ) : null}
+
+                      {/* Completed Deliverables from Writer */}
+                      {order.submittedFiles && order.submittedFiles.length > 0 ? (
+                        <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/70 p-3.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
+                              ✓ Completed Work Delivered
+                            </span>
+                            {order.completedAt ? (
+                              <span className="text-[11px] text-emerald-700">
+                                Delivered on {new Date(order.completedAt).toLocaleDateString()}
+                              </span>
+                            ) : null}
+                          </div>
+                          <div className="mt-2.5 flex flex-wrap gap-2">
+                            {order.submittedFiles.map((fileUrl, idx) => (
+                              <a
+                                key={idx}
+                                href={fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-white px-3 py-1.5 text-xs font-semibold text-emerald-700 shadow-2xs hover:bg-emerald-50 transition"
+                              >
+                                📥 Download File {idx + 1}
+                              </a>
+                            ))}
+                          </div>
+                          {order.submittedCloudLink ? (
+                            <div className="mt-2 text-xs">
+                              <a
+                                href={order.submittedCloudLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-semibold text-emerald-800 underline hover:text-emerald-900"
+                              >
+                                Writer Cloud Deliverable Link ↗
+                              </a>
+                            </div>
+                          ) : null}
+                          {order.submissionNotes ? (
+                            <p className="mt-2 border-t border-emerald-200/60 pt-1.5 text-xs italic text-slate-700">
+                              Note from writer: {order.submissionNotes}
+                            </p>
+                          ) : null}
+                        </div>
+                      ) : order.submittedCloudLink ? (
+                        <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50/70 p-3.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold uppercase tracking-wider text-emerald-800">
+                              ✓ Completed Work Delivered
+                            </span>
+                          </div>
+                          <div className="mt-2">
+                            <a
+                              href={order.submittedCloudLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs font-semibold text-emerald-800 underline hover:text-emerald-900"
+                            >
+                              📥 Access Delivered Files (Cloud Storage) ↗
+                            </a>
+                          </div>
+                          {order.submissionNotes ? (
+                            <p className="mt-2 border-t border-emerald-200/60 pt-1.5 text-xs italic text-slate-700">
+                              Note from writer: {order.submissionNotes}
+                            </p>
+                          ) : null}
+                        </div>
                       ) : null}
 
                       <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 border-t border-slate-100 pt-3 text-xs text-[#647176]">

@@ -91,18 +91,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Please select a valid future deadline." }, { status: 400 });
     }
 
-    // Tier pricing: calculate standard budget if not explicitly provided
     let budget = Number(body.budget);
-    if (!Number.isFinite(budget) || budget <= 0) {
-      const rates: Record<string, number> = {
-        "High School": 15,
-        "Associate": 18,
-        "Bachelor": 22,
-        "Master": 30,
-        "PhD": 35,
-      };
-      const rate = rates[academicLevel] || 22;
-      budget = rate * pages;
+    if (!Number.isFinite(budget) || budget < 0) {
+      budget = 0;
     }
 
     let notes = body.notes?.trim() || "";

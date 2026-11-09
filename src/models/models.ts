@@ -7,6 +7,7 @@ import { PaymentSchema, type IPayment } from './Payment';
 import { ReviewSchema, type IReview } from './Review';
 import { MessageSchema, type IMessage } from './Message';
 import { NotificationSchema, type INotification } from './Notification';
+import { PostSchema, type IPost } from './Post';
 
 export const User: mongoose.Model<IUser> =
   (mongoose.models.User as mongoose.Model<IUser>) || mongoose.model<IUser>('User', UserSchema);
@@ -31,3 +32,6 @@ export const Message: mongoose.Model<IMessage> =
 
 export const Notification: mongoose.Model<INotification> =
   (mongoose.models.Notification as mongoose.Model<INotification>) || mongoose.model<INotification>('Notification', NotificationSchema);
+
+export const Post: mongoose.Model<IPost> =
+  (mongoose.models.Post as mongoose.Model<IPost>) || mongoose.model<IPost>('Post', PostSchema);
