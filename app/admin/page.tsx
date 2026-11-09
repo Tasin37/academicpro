@@ -69,6 +69,7 @@ const BLOG_CATEGORIES = [
 
 export default function AdminDashboardPage() {
   const [activeTab, setActiveTab] = useState<"users" | "orders" | "blogs" | "faqs">("users");
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState<AdminStats>({
     totalUsers: 0,
     totalStudents: 0,
@@ -553,7 +554,79 @@ export default function AdminDashboardPage() {
 
         {/* Tabs Navigation */}
         <div className="mt-10">
-          <div className="flex border-b border-[#d9ddda]">
+          <div className="flex items-center justify-between border-b border-[#d9ddda] md:hidden">
+            <p className="py-4 text-sm font-semibold text-[#182329]">
+              {activeTab === "users"
+                ? "Users Directory"
+                : activeTab === "orders"
+                  ? "All Assignments"
+                  : activeTab === "blogs"
+                    ? "Blog Management"
+                    : "FAQ Management"}
+            </p>
+            <button
+              type="button"
+              onClick={() => setIsMobileMenuOpen(true)}
+              aria-label="Open admin navigation menu"
+              aria-expanded={isMobileMenuOpen}
+              className="rounded-lg border border-[#d9ddda] p-2 text-[#182329] transition hover:border-[#e8664d] hover:text-[#e8664d]"
+            >
+              <span className="sr-only">Open menu</span>
+              <span className="block h-0.5 w-5 bg-current" />
+              <span className="mt-1 block h-0.5 w-5 bg-current" />
+              <span className="mt-1 block h-0.5 w-5 bg-current" />
+            </button>
+          </div>
+
+          {isMobileMenuOpen ? (
+            <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Admin navigation menu">
+              <button
+                type="button"
+                onClick={() => setIsMobileMenuOpen(false)}
+                aria-label="Close admin navigation menu"
+                className="absolute inset-0 bg-[#182329]/45"
+              />
+              <div className="absolute right-0 top-0 h-full w-[min(20rem,85vw)] bg-[#fbfaf7] p-6 shadow-2xl">
+                <div className="flex items-center justify-between border-b border-[#d9ddda] pb-5">
+                  <p className="text-sm font-bold uppercase tracking-wider text-[#182329]">Admin Menu</p>
+                  <button
+                    type="button"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    aria-label="Close admin navigation menu"
+                    className="rounded-full p-2 text-xl leading-none text-[#647176] transition hover:bg-[#e8e7e1] hover:text-[#182329]"
+                  >
+                    <span aria-hidden="true">×</span>
+                  </button>
+                </div>
+                <nav className="mt-6 space-y-2" aria-label="Admin sections">
+                  {[
+                    ["users", `Users Directory (${users.length})`],
+                    ["orders", `All Assignments (${orders.length})`],
+                    ["blogs", `Blog Management (${blogs.length})`],
+                    ["faqs", `FAQ Management (${faqs.length})`],
+                  ].map(([tab, label]) => (
+                    <button
+                      key={tab}
+                      type="button"
+                      onClick={() => {
+                        setActiveTab(tab as "users" | "orders" | "blogs" | "faqs");
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`w-full rounded-xl px-4 py-3 text-left text-sm font-semibold transition ${
+                        activeTab === tab
+                          ? "bg-[#e8664d] text-white"
+                          : "text-[#647176] hover:bg-[#f5f4f0] hover:text-[#182329]"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </nav>
+              </div>
+            </div>
+          ) : null}
+
+          <div className="hidden border-b border-[#d9ddda] md:flex">
             <button
               type="button"
               onClick={() => setActiveTab("users")}
